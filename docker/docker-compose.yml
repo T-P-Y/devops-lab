@@ -1,0 +1,14 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: compose_web
+    ports:
+      - "8082:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: compose_redis
