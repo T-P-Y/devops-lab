@@ -1,0 +1,25 @@
+---
+- name: Базовая настройка лабораторного сервера
+  hosts: lab_servers
+  become: true
+
+  tasks:
+    - name: Установка полезных утилит (curl и tree)
+      apt:
+        name:
+          - curl
+          - tree
+        state: present
+        update_cache: true
+
+    - name: Создание рабочей директории /opt/devops_app
+      file:
+        path: /opt/devops_app
+        state: directory
+        mode: '0755'
+
+    - name: Создание файла статуса развертывания
+      copy:
+        dest: /opt/devops_app/info.txt
+        content: "Сервер настроен автоматически через Ansible Playbook!\n"
+        mode: '0644'
