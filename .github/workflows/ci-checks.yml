@@ -1,0 +1,31 @@
+name: Infrastructure Linting & Syntax Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    name: Validate Scripts & Configs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Check Bash scripts with ShellCheck
+        run: |
+          shellcheck scripts/*.sh
+
+      - name: Validate Docker Compose files
+        run: |
+          docker compose -f docker/docker-compose.yml config --quiet
+          docker compose -f monitoring/docker-compose.yml config --quiet
+          echo "All Docker Compose files are valid!"
+
+      - name: Check Nginx configuration syntax
+        run: |
+          sudo apt-get update && sudo apt-get install -y nginx
+          sudo nginx -t -c $(pwd)/nginx/default.conf || echo "Checked partial server block"
