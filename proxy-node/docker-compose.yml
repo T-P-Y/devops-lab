@@ -1,0 +1,11 @@
+services:
+  socks5:
+    build: .
+    image: custom-socks5:v1
+    container_name: my_socks5_proxy
+    restart: unless-stopped
+    ports:
+      - "1080:1080"
+    environment:
+      - PROXY_USER=proxyuser
+      - PROXY_PASSWORD=proxypass123
