@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: status-api-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: status-api
+  template:
+    metadata:
+      labels:
+        app: status-api
+    spec:
+      containers:
+        - name: status-api
+          image: status-api:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: status-api-service
+spec:
+  type: NodePort
+  selector:
+    app: status-api
+  ports:
+    - port: 80
+      targetPort: 5000
+      nodePort: 30080
