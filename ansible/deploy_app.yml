@@ -1,0 +1,38 @@
+---
+- name: Деплой собственного микросервиса status-api в Docker
+  hosts: lab_servers
+  become: true
+
+  tasks:
+    - name: Убедиться, что служба Docker запущена
+      service:
+        name: docker
+        state: started
+
+    - name: Сборка Docker-образа status-api:v2 из Dockerfile
+      community.docker.docker_image:
+        name: status-api
+        tag: v2
+        source: build
+        build:
+          path: /home/shiz/devops_lab/custom-app
+        force_source: true
+
+    - name: Запуск контейнера status_api_prod на порту 5050
+      community.docker.docker_container:
+        name: status_api_prod
+        image: status-api:v2
+        state: started
+        restart_policy: always
+        ports:
+          - "5050:5000"
+
+    - name: Проверка работоспособности API (Healthcheck)
+      uri:
+        url: http://localhost:5050
+        return_content: true
+      register: api_response
+
+    - name: Вывод ответа от развернутого сервиса
+      debug:
+        msg: "Сервис ответил: {{ api_response.content }}"
